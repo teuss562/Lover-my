@@ -5,6 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Para Minha Namorada</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      text-align: center;
+      padding: 50px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    header h1 {
+      font-size: 2.5em;
+      color: #e91e63;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      font-size: 1.2em;
+      color: #555;
+    }
+
+    .message {
+      margin: 30px 0;
+      font-size: 1.2em;
+      color: #333;
+    }
+
+    .gallery img {
+      width: 200px;
+      margin: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .timer {
+      font-size: 2em;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-top: 30px;
+    }
+
+    .timer span {
+      display: inline-block;
+      min-width: 80px;
+    }
+  </style>
 </head>
 <body>
 <div class="container">
@@ -25,11 +77,72 @@
     <img src="foto3.jpg" alt="Sorrisos">
   </div>
 
+  <div class="timer" id="timer">
+    <span id="months">00</span> :
+    <span id="days">00</span> :
+    <span id="hours">00</span> :
+    <span id="minutes">00</span> :
+    <span id="seconds">00</span>
+    <br>
+    <small style="font-size: 0.6em; color: #777;">Meses : Dias : Horas : Minutos : Segundos</small>
+  </div>
+
   <audio autoplay loop>
     <source src="musica.mp3" type="audio/mp3">
   </audio>
 
-  <script src="script.js"></script>
+  <script>
+    // Função para obter a hora de Brasília (UTC-3)
+    function getBrasiliaDate() {
+      const now = new Date();
+      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+      return new Date(utc - (3 * 60 * 60 * 1000)); // UTC-3
+    }
+
+    // Verifica se já existe uma data de início salva
+    let storedStart = localStorage.getItem('startDate');
+    let startDate;
+
+    if (storedStart) {
+      // Usa a data salva anteriormente
+      startDate = new Date(storedStart);
+    } else {
+      // Cria a data de início com 7m 7d 1h 45min 30s atrás do horário de Brasília atual
+      startDate = getBrasiliaDate();
+      startDate.setSeconds(startDate.getSeconds() - 30);
+      startDate.setMinutes(startDate.getMinutes() - 45);
+      startDate.setHours(startDate.getHours() - 1);
+      startDate.setDate(startDate.getDate() - 7);
+      startDate.setMonth(startDate.getMonth() - 7);
+      localStorage.setItem('startDate', startDate.toISOString()); // Salva no localStorage
+    }
+
+    function updateTimer() {
+      const now = getBrasiliaDate();
+      const diff = now - startDate;
+
+      let seconds = Math.floor(diff / 1000);
+      let minutes = Math.floor(seconds / 60);
+      let hours = Math.floor(minutes / 60);
+      let days = Math.floor(hours / 24);
+      let months = Math.floor(days / 30); // Aproximação
+
+      seconds = seconds % 60;
+      minutes = minutes % 60;
+      hours = hours % 24;
+      days = days % 30;
+
+      document.getElementById('months').textContent = String(months).padStart(2, '0');
+      document.getElementById('days').textContent = String(days).padStart(2, '0');
+      document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+      document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000); 
+  </script>
+
 </div>
 </body>
 </html>
