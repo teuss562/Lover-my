@@ -9,7 +9,7 @@ function createHeart() {
 }
 setInterval(createHeart, 300);
 
-// Temporizador crescente
+// Temporizador crescente (desde uma data inicial)
 let startDate = new Date();
 startDate.setHours(startDate.getHours() - 1);
 startDate.setDate(startDate.getDate() - 7);
@@ -17,13 +17,13 @@ startDate.setMonth(startDate.getMonth() - 7);
 
 function updateTimer() {
   let now = new Date();
-  let diff = now - startDate;
+  let diff = now - startDate; // diferença em ms
 
-  let hours = Math.floor(minutes / 60);
-  let days = Math.floor(hours / 24);
+  let totalHours = Math.floor(diff / (1000 * 60 * 60));
+  let days = Math.floor(totalHours / 24);
   let months = Math.floor(days / 30);
 
-  hours = hours % 24;
+  let hours = totalHours % 24;
   days = days % 30;
 
   document.getElementById('months').textContent = String(months).padStart(2, '0');
